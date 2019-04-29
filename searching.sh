@@ -1,4 +1,5 @@
 #!/bin/bash
+#searches no of occurences of a search string in a webpage
 if [ $# -ne 2 ]; then
 echo Enter valid no of arguments
 else

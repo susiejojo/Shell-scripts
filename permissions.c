@@ -9,35 +9,60 @@
 
 
 extern int errno;
+int convertDecimalToOctal(int decimalNumber)
+{
+    int octalNumber = 0, i = 1;
+
+    while (decimalNumber != 0)
+    {
+        octalNumber += (decimalNumber % 8) * i;
+        decimalNumber /= 8;
+        i *= 10;
+    }
+
+    return octalNumber;
+}
 
 int main (int argc, char* argv[])
 {
 	DIR* dir = opendir("/home/susiejojo/operating_systems");
 	if (dir) {
-	    printf("Directory was created\n");
+	    puts("Directory was created");
 	    closedir(dir);
 	} else if (ENOENT == errno) {
-	    printf("Directory does not exist\n");
+	    puts("Directory does not exist");
 	} else {
-	    printf("Cannot open directory\n");
+	    puts("Cannot open directory");
 	}
   struct stat  file_stat;
 
   while (argc-- > 1)
     {
       if (lstat(argv[argc], &file_stat) == -1)
-        fprintf(stderr, "%s\n", strerror(errno));
+        // fprintf(stderr, "%s\n", strerror(errno));
+        write(2,"File not found",13);
       else
         {
-	         //fprintf(stdout, "%u\t%s\n", file_stat.st_mode,
-	          //        argv[argc]);
-	         char modes[6];
-	         snprintf(modes,6,"%d",file_stat.st_mode);
+	         fprintf(stdout, "%o\t%s\n", file_stat.st_mode,
+	                  argv[argc]);
+        	 //write(1,file_stat.st_mode,strlen(file_stat.st_mode));
+        	 write(1,argv[argc],strlen(argv[argc]));
+        	 //write(1,'\n',strlen('\n'));
+        	 puts("");
+	         char modes[7]="";
+	         char modes1[7];
+	         //printf("st_mode:%d",file_stat.st_mode);
+	         snprintf(modes1,7,"%d",convertDecimalToOctal(file_stat.st_mode));
+	         //printf("%s%s\n",modes1,modes);
+	         if (strlen(modes1)<6)
+	         	strcat(modes,"0");
+	         strcat(modes,modes1);
+	         //printf("%s\n",modes);
 	         char bin_user[4];
 	         bin_user[0] = '\0';
 	         for(int j = 2; j >= 0; --j)
 	        {
-	            if(modes[2] & (1 << j))
+	            if(modes[3] & (1 << j))
 	             {
 	                strcat(bin_user,"1");
 	             } 
@@ -50,7 +75,7 @@ int main (int argc, char* argv[])
 	         bin_grp[0] = '\0';
 	         for(int j = 2; j >= 0; --j)
 	        {
-	            if(modes[3] & (1 << j))
+	            if(modes[4] & (1 << j))
 	             {
 	                strcat(bin_grp,"1");
 	             } 
@@ -63,7 +88,7 @@ int main (int argc, char* argv[])
 	         bin_oth[0] = '\0';
 	         for(int j = 2; j >= 0; --j)
 	        {
-	            if(modes[4] & (1 << j))
+	            if(modes[5] & (1 << j))
 	             {
 	                strcat(bin_oth,"1");
 	             } 
@@ -74,25 +99,25 @@ int main (int argc, char* argv[])
 	        }
 	         //printf("User:%s\n",bin_user);
 	         if (bin_user[0]=='1')
-	         	printf("User has read permission\n");
+	         	puts("User has read permission");
 	         if (bin_user[1]=='1')
-	         	printf("User has write permission\n");
+	         	puts("User has write permission");
 	         if (bin_user[2]=='1')
-	         	printf("User has execute permission\n");
+	         	puts("User has execute permission");
 	         //printf("Grp:%s\n",bin_grp);
 	         if (bin_grp[0]=='1')
-	         	printf("Group has read permission\n");
+	         	puts("Group has read permission");
 	         if (bin_grp[1]=='1')
-	         	printf("Group has write permission\n");
+	         	puts("Group has write permission");
 	         if (bin_grp[2]=='1')
-	         	printf("Group has execute permission\n");
+	         	puts("Group has execute permission");
 	         //printf("Others:%s\n",bin_oth);
 	         if (bin_oth[0]=='1')
-	         	printf("Others has read permission\n");
+	         	puts("Others has read permission");
 	         if (bin_oth[1]=='1')
-	         	printf("Others has write permission\n");
+	         	puts("Others has write permission");
 	         if (bin_oth[2]=='1')
-	         	printf("Others has execute permission\n");
+	         	puts("Others has execute permission");
         }
     }
   return 0;
